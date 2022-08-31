@@ -11,19 +11,16 @@ const Table = () => {
     (state) => state?.components?.components?.components
   );
 
-  
-
   const calculateBatches = (component) => {
-    let temp = 0
-    component?.batches?.map((el) => temp += el.issuedQuantityB)
-    return temp
-  }
-  console.log(components)
-  
+    let temp = 0;
+    component?.batches?.map((el) => (temp += el.issuedQuantityB));
+    return temp;
+  };
+  console.log(components);
 
   useEffect(() => {
     dispatch(getAllComponents());
-  },[]);
+  }, []);
 
   return (
     <>
@@ -57,9 +54,7 @@ const Table = () => {
               >
                 <Link to={`/${component.name}/batches`}>{component.name}</Link>
               </th>
-              <td className="py-4 px-6">
-                {calculateBatches(component)}
-              </td>
+              <td className="py-4 px-6">{calculateBatches(component)}</td>
               <td className="py-4 px-6">
                 {component.batches ? component.batches.length : 0}
               </td>

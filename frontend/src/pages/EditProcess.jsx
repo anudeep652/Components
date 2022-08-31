@@ -45,9 +45,9 @@ const EditProcess = () => {
 
   let isProcessQuantityEmpty = currComponent[0]?.batches[
     batchIndex[0]
-  ]?.process.every((el) => el.issuedQuantity ===0)
+  ]?.process.every((el) => el.issuedQuantity === 0);
 
-  console.log(isProcessQuantityEmpty)
+  console.log(isProcessQuantityEmpty);
 
   // const isProcessQuantityEmptyF = (index) => {
   //   return (
@@ -64,15 +64,13 @@ const EditProcess = () => {
     tempArray.push(el)
   );
 
-  
   console.log(tempArray);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isProcessQuantityEmpty) {
       tempArray = tempArray?.map((el, index, arr) => {
-        if(isProcessQuantityEmpty){
-  
+        if (isProcessQuantityEmpty) {
           if (index === 0) {
             return [
               ...arr,
@@ -86,7 +84,7 @@ const EditProcess = () => {
       });
       console.log(isProcessQuantityEmpty);
       tempArray = tempArray[0];
-  
+
       tempArray?.map(
         (el, index, array) => typeof el === "number" && array.splice(index, 1)
       );

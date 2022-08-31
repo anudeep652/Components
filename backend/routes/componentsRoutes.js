@@ -5,7 +5,6 @@ const {
   updateProcess,
   updateBatch,
   deleteComponent,
-  
 } = require("../controllers/componentsController");
 const router = express.Router();
 

@@ -9,13 +9,15 @@ const componentSchema = new Schema(
       required: [true, "name should not be empty"],
     },
     companyName: String,
-    process :[{
-      processName:String
-    }],
+    process: [
+      {
+        processName: String,
+      },
+    ],
 
     batches: [
       {
-        batchName: { type: String},
+        batchName: { type: String },
         progress: String,
         remaining: Number,
         completed: Number,
@@ -23,23 +25,19 @@ const componentSchema = new Schema(
           type: Number,
           default: 0,
         },
-        process  : [
+        process: [
           {
-            processName:String,
+            processName: String,
             accepted: Number,
             rejected: Number,
             issuedQuantity: {
               type: Number,
               default: 0,
             },
-          }
-        ]
-
-        
+          },
+        ],
       },
-      
     ],
-    
   },
   { timestamps: true }
 );

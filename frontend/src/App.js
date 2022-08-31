@@ -13,11 +13,14 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route exact path="/:name/:batchName/process" element={<Process />} />
-          <Route path="/component/create" element={<CreatePage />}/>
+          <Route path="/component/create" element={<CreatePage />} />
           <Route path="/" element={<Home />} />
           <Route path="/:name/batches" element={<Batch />} />
           <Route path="/:name/create-batch" element={<CreateBatch />} />
-          <Route path="/:name/:batchName/edit-process" element={<EditProcess />} />
+          <Route
+            path="/:name/:batchName/edit-process"
+            element={<EditProcess />}
+          />
         </Routes>
       </BrowserRouter>
     </div>

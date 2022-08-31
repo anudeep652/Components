@@ -2,45 +2,44 @@ import React from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
-import { getAllComponents, setCurrComponent } from "../features/Components/componentSlice";
+import {
+  getAllComponents,
+  setCurrComponent,
+} from "../features/Components/componentSlice";
 const Process = () => {
-  const { name,batchName } = useParams();
+  const { name, batchName } = useParams();
 
-  
-
-  let { currComponent } = useSelector(
-    (state) => state.components
-  );
+  let { currComponent } = useSelector((state) => state.components);
   // currComponent = useSelector((state) => state.components?.currComponent);
   console.log(currComponent);
-  let batchIndex =currComponent[0].batches.map((el,index) => el.batchName === batchName && index )
-  batchIndex = batchIndex.filter((el) => typeof el==='number')
-  console.log(batchIndex)
+  let batchIndex = currComponent[0].batches.map(
+    (el, index) => el.batchName === batchName && index
+  );
+  batchIndex = batchIndex.filter((el) => typeof el === "number");
+  console.log(batchIndex);
   let { components } = useSelector((state) => state.components?.components);
-  
+
   const dispatch = useDispatch();
 
- 
-  
   let component = components?.filter((c) => c.name === name);
 
   let isProcessQuantityEmpty = currComponent[0]?.batches[
     batchIndex[0]
-  ]?.process.every((el) => el.issuedQuantity ===0)
-  
+  ]?.process.every((el) => el.issuedQuantity === 0);
+
   useEffect(() => {
-    dispatch(getAllComponents())
-    dispatch(setCurrComponent(component))
-
-
-  },[])
+    dispatch(getAllComponents());
+    dispatch(setCurrComponent(component));
+  }, []);
   // const isProcessQuantityEmpty = (index) => {
 
   //   return component[0]?.batches[batchIndex[0]]?.process[index]?.issuedQuantity === 0
   // }
-  
-  let issuedQuantity = currComponent[0].batches.filter((c) => c.batchName === batchName)
-  console.log(issuedQuantity)  
+
+  let issuedQuantity = currComponent[0].batches.filter(
+    (c) => c.batchName === batchName
+  );
+  console.log(issuedQuantity);
 
   return (
     <>
@@ -78,17 +77,28 @@ const Process = () => {
             </tr>
           </thead>
           <tbody id="box">
-            {currComponent[0]?.batches[batchIndex[0]]?.process?.map((comp,index) => (
-              <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700" key={index}>
-                <th
-                  scope="row"
-                  className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+            {currComponent[0]?.batches[batchIndex[0]]?.process?.map(
+              (comp, index) => (
+                <tr
+                  className="bg-white border-b dark:bg-gray-900 dark:border-gray-700"
+                  key={index}
                 >
-                  {comp.processName}
-                </th>
-                <td className="py-4 px-6">{ isProcessQuantityEmpty ? (index === 0 ? issuedQuantity[index]?.issuedQuantityB : 0) :comp?.issuedQuantity}</td>
-              </tr>
-            ))}
+                  <th
+                    scope="row"
+                    className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                  >
+                    {comp.processName}
+                  </th>
+                  <td className="py-4 px-6">
+                    {isProcessQuantityEmpty
+                      ? index === 0
+                        ? issuedQuantity[index]?.issuedQuantityB
+                        : 0
+                      : comp?.issuedQuantity}
+                  </td>
+                </tr>
+              )
+            )}
           </tbody>
         </table>
       </div>

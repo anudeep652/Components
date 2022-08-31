@@ -5,53 +5,57 @@ import { useNavigate } from "react-router-dom";
 import { createComponent } from "../features/Components/componentSlice";
 
 const CreatePage = () => {
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [names, setNames] = useState({ componentName: "", companyName: "" });
   const [process, setProcess] = useState({
-    process1:'',
-    process2:'',
-    process3:'',
-    process4:'',
-    process5:'',
-    process6:'',
-    process7:'',
-    process8:'',
-    process9:'',
-    process10:'',
+    process1: "",
+    process2: "",
+    process3: "",
+    process4: "",
+    process5: "",
+    process6: "",
+    process7: "",
+    process8: "",
+    process9: "",
+    process10: "",
   });
 
-  const handleClick = async(e) => {
-    e.preventDefault()
-    const arr = Object.entries(process)
+  const handleClick = async (e) => {
+    e.preventDefault();
+    const arr = Object.entries(process);
 
-    const newArr = arr.filter((array) => array[1]!=='')
-    let myProcess = []
-    
-    newArr.forEach((a) => myProcess.push({'processName':a[1]}))
-    
-    let myObj = {name:names.componentName,companyName:names.companyName,process:myProcess}
+    const newArr = arr.filter((array) => array[1] !== "");
+    let myProcess = [];
+
+    newArr.forEach((a) => myProcess.push({ processName: a[1] }));
+
+    let myObj = {
+      name: names.componentName,
+      companyName: names.companyName,
+      process: myProcess,
+    };
     console.log(myObj);
-    setNames({ componentName: "", companyName: "" })
+    setNames({ componentName: "", companyName: "" });
     setProcess({
-        process1:'',
-        process2:'',
-        process3:'',
-        process4:'',
-        process5:'',
-        process6:'',
-        process7:'',
-        process8:'',
-        process9:'',
-        process10:'',
-      })
-      try {
-        await dispatch(createComponent(myObj))
-        navigate("/")
-      } catch (error) {
-        console.log(error)
-      }
-  }
+      process1: "",
+      process2: "",
+      process3: "",
+      process4: "",
+      process5: "",
+      process6: "",
+      process7: "",
+      process8: "",
+      process9: "",
+      process10: "",
+    });
+    try {
+      await dispatch(createComponent(myObj));
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       <div className="mt-4 ml-4 mr-4">
@@ -116,7 +120,7 @@ const CreatePage = () => {
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-grey-500 focus:border-grey-500 block w-full p-2.5"
                 value={process.process1}
                 onChange={(e) =>
-                  setProcess({...process,process1:e.target.value})
+                  setProcess({ ...process, process1: e.target.value })
                 }
               />
             </div>

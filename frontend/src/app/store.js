@@ -20,5 +20,4 @@ const store = configureStore({
   reducer: persistedReducer,
 });
 
-
-export default store
+export default store;

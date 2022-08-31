@@ -6,9 +6,7 @@ const createComponent = async (req, res) => {
   const data = req.body;
 
   try {
-    const createdComponent = await Component.create(
-      data
-    );
+    const createdComponent = await Component.create(data);
     res.status(201).json({ createComponent });
   } catch (error) {
     if (error.message.includes("duplicate key")) {
@@ -57,21 +55,19 @@ const updateBatch = async (req, res) => {
 const updateProcess = async (req, res) => {
   try {
     const { process } = req.body;
-    const { batch,name } = req.params;
-    
+    const { batch, name } = req.params;
+
     const updatedComponent = await Component.findOneAndUpdate(
       { name: name },
       {
-          $set: {
-            'batches.$[element].process': process,
-          },
+        $set: {
+          "batches.$[element].process": process,
+        },
       },
       {
-        arrayFilters:[{'element.batchName':`${batch}`}],
-        new:true
-
+        arrayFilters: [{ "element.batchName": `${batch}` }],
+        new: true,
       }
-      
     );
     res.status(201).json({ name: name, batches: updatedComponent.batches });
   } catch (error) {
