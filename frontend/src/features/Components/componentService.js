@@ -1,9 +1,11 @@
 const axios = require("axios");
 
+
+const URL = 'https://components100.herokuapp.com'
 //get all components
 export const getComponents = async () => {
   try {
-    const response = await axios.get("/components/");
+    const response = await axios.get(`${URL}/components/`);
     if (response.data) {
       return response.data;
     }
@@ -15,7 +17,7 @@ export const getComponents = async () => {
 //create a component
 export const createAComponent = async (data) => {
   try {
-    await axios.post("/components/create", data);
+    await axios.post(`${URL}/components/create`, data);
   } catch (error) {
     console.log(error);
   }
@@ -24,7 +26,7 @@ export const createAComponent = async (data) => {
 //modify batches of a component
 export const modifyAllBatches = async (data, name) => {
   try {
-    const response = await axios.put(`/components/batch/${name}`, data);
+    const response = await axios.put(`${URL}/components/batch/${name}`, data);
     if (response.data) return response.data;
   } catch (error) {
     console.log(error);
@@ -33,7 +35,7 @@ export const modifyAllBatches = async (data, name) => {
 export const modifyAllProcess = async (data, name, batch) => {
   try {
     const response = await axios.put(
-      `/components/process/${batch}/${name}`,
+      `${URL}/components/process/${batch}/${name}`,
       data
     );
     if (response.data) return response.data;

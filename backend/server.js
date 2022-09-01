@@ -7,6 +7,15 @@ const cors = require("cors");
 const app = express();
 app.use(express.json());
 
+const corsOptions = {
+  origin: ['https://components100.netlify.app'],
+  credentials:true,            //access-control-allow-credentials:true
+  preflightContinue: true,
+  optionSuccessStatus:200,
+  
+}
+aap.use(cors(corsOptions))
+
 app.use("/user", userRoutes);
 app.use("/components", componentsRoutes);
 
