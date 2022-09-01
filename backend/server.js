@@ -1,4 +1,5 @@
 require("dotenv").config();
+const path = require("path");
 const express = require("express");
 const mongoose = require("mongoose");
 const userRoutes = require("./routes/userRoutes.js");
@@ -7,22 +8,21 @@ const cors = require("cors");
 const app = express();
 app.use(express.json());
 
-const corsOptions = {
-  origin: ['https://components100.netlify.app/'],
-  credentials:true,            //access-control-allow-credentials:true
-  preflightContinue: true,
-  optionSuccessStatus:200,
-  
-}
-aap.use(cors(corsOptions))
-
-app.get('/',(req,res) => {
-  res.set('Access-Control-Allow-Origin', 'https://components100.netlify.app/');
-  res.send({ "msg": "This has CORS enabled 🎈" })
-})
-
 app.use("/user", userRoutes);
 app.use("/components", componentsRoutes);
+
+// Serve frontend
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/build")));
+
+  app.get("*", (req, res) =>
+    res.sendFile(
+      path.resolve(__dirname, "../", "frontend", "build", "index.html")
+    )
+  );
+}else{
+  app.get("/",(req,res) => res.send("App is under development"))
+}
 
 const PORT = process.env.PORT || 5000;
 
