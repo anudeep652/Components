@@ -8,7 +8,7 @@ const app = express();
 app.use(express.json());
 
 const corsOptions = {
-  origin: ['https://components100.netlify.app'],
+  origin: ['https://components100.netlify.app/'],
   credentials:true,            //access-control-allow-credentials:true
   preflightContinue: true,
   optionSuccessStatus:200,
