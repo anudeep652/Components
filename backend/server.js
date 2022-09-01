@@ -16,6 +16,11 @@ const corsOptions = {
 }
 aap.use(cors(corsOptions))
 
+app.get('/',(req,res) => {
+  res.set('Access-Control-Allow-Origin', 'https://components100.netlify.app/');
+  res.send({ "msg": "This has CORS enabled 🎈" })
+})
+
 app.use("/user", userRoutes);
 app.use("/components", componentsRoutes);
 
