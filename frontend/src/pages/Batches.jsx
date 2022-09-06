@@ -1,30 +1,76 @@
 import React from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 import {
-  getAllComponents,
+  deleteABatch,
   setCurrComponent,
 } from "../features/Components/componentSlice";
+import Nav from "../components/Nav";
 
 const Batch = () => {
   const dispatch = useDispatch();
+  // const navigate = useNavigate();
   const { name } = useParams();
-  let { components } = useSelector((state) => state?.components?.components);
-  let currComponent = useSelector((state) => state?.components?.currComponent);
+  let { components } = useSelector((state) => state?.components);
+  // let currComponent = useSelector((state) => state?.components?.currComponent);
 
   let component = components?.filter((c) => c.name === name);
-  console.log(component);
+  // console.log(component);
   useEffect(() => {
-    dispatch(getAllComponents());
+    // dispatch(getAllComponents());
     dispatch(setCurrComponent(component));
   }, []);
-  console.log(currComponent);
+
+  // console.log(currComponent);
   // console.log(components)
-  console.log(currComponent);
+  // console.log(currComponent);
+
+  const handleClick = (batchName) => {
+    // console.log(batchName);
+    dispatch(deleteABatch(batchName));
+    // navigate("/");
+  };
+
+  const calcProgress = (name) => {
+    const reqBatch = component[0].batches.filter((b) => b.batchName === name);
+    // console.log(reqBatch);
+    if (
+      reqBatch[0].process[0]?.issuedQuantity === 0 &&
+      reqBatch[0].process[1].issuedQuantity !== 0
+    ) {
+      return "Completed";
+    } else {
+      return "Progress";
+    }
+  };
+
+  const calcCompleted = (name) => {
+    const reqBatch = component[0].batches.filter((b) => b.batchName === name);
+    // console.log(reqBatch[0].process.length);
+    return reqBatch[0].process[reqBatch[0].process.length - 1]?.issuedQuantity;
+  };
+
+  const calcRemaining = (name) => {
+    const reqBatch = component[0].batches.filter((b) => b.batchName === name);
+    if (reqBatch[0].process.every((el) => el.issuedQuantity === 0)) {
+      return reqBatch[0].issuedQuantityB;
+    }
+
+    const lastIndex = reqBatch[0].process.length - 1;
+    let remaining = 0;
+    reqBatch[0].process.forEach((p, index) =>
+      index !== lastIndex ? (remaining += p.issuedQuantity) : p
+    );
+    // const reqArr = reqBatch[0].process.filter((p,index) => index !== reqBatch[0].process.length - 1 )
+    return remaining;
+  };
 
   return (
     <div>
+      <Nav />
       <Link
         to={`/${name}/create-batch`}
         className="duration-300 ml-4 mt-4 mb-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -62,6 +108,9 @@ const Batch = () => {
               <th scope="col" className="py-3 px-6">
                 Completed no
               </th>
+              <th scope="col" className="py-3 px-6">
+                Delete batch
+              </th>
             </tr>
           </thead>
           <tbody id="box">
@@ -78,9 +127,19 @@ const Batch = () => {
                     {batch.batchName}
                   </Link>
                 </th>
-                <td className="py-4 px-6">{batch.progress}</td>
-                <td className="py-4 px-6">{batch.remaining}</td>
-                <td className="py-4 px-6">{batch.completed}</td>
+                <td className="py-4 px-6">{calcProgress(batch.batchName)}</td>
+                <td className="py-4 px-6">{calcRemaining(batch.batchName)}</td>
+                <td className="py-4 px-6">{calcCompleted(batch.batchName)}</td>
+
+                <button className="py-4 px-16">
+                  <DeleteIcon
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleClick(batch.batchName);
+                    }}
+                    fontSize="medium"
+                  />
+                </button>
               </tr>
             ))}
           </tbody>

@@ -8,6 +8,8 @@ const cors = require("cors");
 const app = express();
 app.use(express.json());
 
+app.use(cors());
+
 app.use("/user", userRoutes);
 app.use("/components", componentsRoutes);
 
@@ -20,8 +22,8 @@ if (process.env.NODE_ENV === "production") {
       path.resolve(__dirname, "../", "frontend", "build", "index.html")
     )
   );
-}else{
-  app.get("/",(req,res) => res.send("App is under development"))
+} else {
+  app.get("/", (req, res) => res.send("App is under development"));
 }
 
 const PORT = process.env.PORT || 5000;

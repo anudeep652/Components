@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import Nav from "../components/Nav";
 import {
-  getAllComponents,
   modifyProcess,
+  reset,
   setCurrBatch,
-  setCurrComponent,
 } from "../features/Components/componentSlice";
 
 const EditProcess = () => {
   let [accepted, setAccepted] = useState([]);
   let [rejected, setRejected] = useState([]);
+
+  let { isError, message, isSuccess } = useSelector(
+    (state) => state?.components
+  );
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -23,10 +27,10 @@ const EditProcess = () => {
   currComponent = useSelector((state) => state.components?.currComponent);
   currComponent = JSON.parse(JSON.stringify(currComponent));
   dispatch(setCurrBatch(batchName));
-  const { currBatchName } = useSelector((state) => state?.components);
-  console.log(currBatchName);
-  console.log(currComponent);
-  let { components } = useSelector((state) => state.components?.components);
+  // const { currBatchName } = useSelector((state) => state?.components);
+  // console.log(currBatchName);
+  // console.log(currComponent);
+  let { components } = useSelector((state) => state.components);
 
   let batchIndex = currComponent[0].batches?.map(
     (el, index) => el.batchName === batchName && index
@@ -36,10 +40,10 @@ const EditProcess = () => {
   let component = components?.filter((c) => c.name === name);
   console.log(component);
 
-  let currBatch = component[0].batches.map(
+  let currBatch = component[0]?.batches.map(
     (el) => el.batchName === batchName && el
   );
-  currBatch = currBatch.filter((el) => typeof el === "object");
+  currBatch = currBatch?.filter((el) => typeof el === "object");
 
   console.log(currBatch);
 
@@ -64,10 +68,15 @@ const EditProcess = () => {
     tempArray.push(el)
   );
 
-  console.log(tempArray);
+  // console.log(tempArray);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // accepted.forEach((el) => console.log(typeof el));
+    accepted = accepted.filter((el) => el !== undefined);
+    rejected = rejected.filter((el) => el !== undefined);
+    // console.log(accepted);
+    // console.log(rejected);
     if (isProcessQuantityEmpty) {
       tempArray = tempArray?.map((el, index, arr) => {
         if (isProcessQuantityEmpty) {
@@ -82,37 +91,39 @@ const EditProcess = () => {
           // return el;
         }
       });
-      console.log(isProcessQuantityEmpty);
+      // console.log(isProcessQuantityEmpty);
       tempArray = tempArray[0];
 
       tempArray?.map(
         (el, index, array) => typeof el === "number" && array.splice(index, 1)
       );
     }
-    console.log(accepted);
-    console.log(tempArray);
+    // console.log(accepted);
+    // console.log(tempArray);
 
     // console.log(data);
-    tempArray = accepted?.map((el, index) => {
-      if (tempArray[el.index] && el?.issuedQuantity) {
-        return [
-          ...tempArray,
-          (tempArray[el.index].issuedQuantity -= el.issuedQuantity),
-          (tempArray[el.index + 1].issuedQuantity += el.issuedQuantity),
-        ];
-      } else {
-        return el;
-      }
-    });
-    //accepted =[{processName:"rdf",issuedQuantity:30,index:0}]
+    if (accepted.length > 0) {
+      tempArray = accepted?.map((el, index) => {
+        if (tempArray?.[el.index] && el?.issuedQuantity) {
+          return [
+            ...tempArray,
+            (tempArray[el.index].issuedQuantity -= el.issuedQuantity),
+            (tempArray[el.index + 1].issuedQuantity += el.issuedQuantity),
+          ];
+        } else {
+          return el;
+        }
+      });
+      //accepted =[{processName:"rdf",issuedQuantity:30,index:0}]
 
-    console.log(tempArray);
+      // console.log(tempArray);
 
-    tempArray = tempArray[0];
+      tempArray = tempArray[0];
+    }
 
     if (rejected.length > 0) {
       tempArray = rejected?.map((el, index) => {
-        if (tempArray[el.index] && el?.issuedQuantity) {
+        if (tempArray?.[el.index] && el?.issuedQuantity) {
           return [
             ...tempArray,
             (tempArray[el.index].issuedQuantity -= el.issuedQuantity),
@@ -121,27 +132,48 @@ const EditProcess = () => {
           return el;
         }
       });
+      // console.log(tempArray);
       tempArray = tempArray[0];
     }
 
-    tempArray?.map((el) => {
+    const calcRejected = (el, index) => {
+      for (let r of rejected) {
+        if (r.processName === el.processName) {
+          return r.issuedQuantity;
+        }
+      }
+      return 0;
+    };
+
+    tempArray?.map((el, index) => {
       if (typeof el !== "number") {
         data.push({
           processName: el.processName,
           issuedQuantity: el.issuedQuantity,
+          rejected: calcRejected(el, index),
         });
       }
     });
 
-    console.log(data);
-    console.log(tempArray);
-    console.log(data);
+    // console.log(data);
+    // console.log(tempArray);
+    // console.log(data);
+    // console.log(rejected.length > 0)
+    // console.log(rejected);
+
     await dispatch(modifyProcess({ process: data }));
-    navigate("/");
   };
+
+  useEffect(() => {
+    if (!isError && isSuccess && message === "") {
+      navigate(`/${name}/${batchName}/process`);
+      dispatch(reset());
+    }
+  }, [isError, isSuccess, navigate, name, message, dispatch, batchName]);
 
   return (
     <>
+      <Nav />
       <form onSubmit={handleSubmit}>
         <div className=" mt-8 overflow-x-auto relative shadow-md sm:rounded-lg">
           <table className="table-auto w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -193,7 +225,8 @@ const EditProcess = () => {
                         }
                         type="number"
                         id="visitors"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:fo
+                        cus:ring-blue-500 dark:focus:border-blue-500"
                       />
                     </td>
                     <td className="py-4 px-6">

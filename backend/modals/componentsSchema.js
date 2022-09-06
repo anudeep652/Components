@@ -5,8 +5,9 @@ const componentSchema = new Schema(
   {
     name: {
       type: String,
-      // unique: true,
+      unique: true,
       required: [true, "name should not be empty"],
+      index: true,
     },
     companyName: String,
     process: [

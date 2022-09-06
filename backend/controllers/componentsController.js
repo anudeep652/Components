@@ -6,8 +6,11 @@ const createComponent = async (req, res) => {
   const data = req.body;
 
   try {
+    const component = await Component.findOne({ name: data.name });
+    if (component)
+      return res.status(400).json({ error: "Component already exists" });
     const createdComponent = await Component.create(data);
-    res.status(201).json({ createComponent });
+    res.status(201).json({ createdComponent });
   } catch (error) {
     if (error.message.includes("duplicate key")) {
       return res
@@ -27,7 +30,7 @@ const getAllComponents = async (req, res) => {
     const components = await Component.find({});
     return res.status(200).json({ components: components });
   } catch (error) {
-    return res.status(400).json({ error: error });
+    return res.status(400).json({ error: error.message });
   }
 };
 
@@ -47,7 +50,7 @@ const updateBatch = async (req, res) => {
     );
     res.status(201).json({ name: name, batches: updatedComponent.batches });
   } catch (error) {
-    res.status(400).json({ error: error });
+    res.status(400).json({ error: error.message });
   }
 };
 
@@ -71,22 +74,36 @@ const updateProcess = async (req, res) => {
     );
     res.status(201).json({ name: name, batches: updatedComponent.batches });
   } catch (error) {
-    res.status(400).json({ error: error });
+    res.status(400).json({ error: error.message });
   }
 };
 
 //delete a component
 const deleteComponent = async (req, res) => {
   try {
-    const { name } = req.params;
-    const haveComponent = await Component.findOne({ name: name });
+    const { component } = req.params;
+    const haveComponent = await Component.findOne({ name: component });
     if (!haveComponent)
       return res.status(400).json({ error: "this document doesn't exists" });
 
-    await Component.findOneAndDelete({ name: name });
-    res.status(200).json({ message: "Successfully deleted" });
+    await haveComponent.remove();
+    res.status(200).json({ component });
   } catch (error) {
-    return res.status(400).json({ error: error });
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+const deleteBatch = async (req, res) => {
+  try {
+    const { batch, component } = req.params;
+
+    await Component.updateOne(
+      { name: component },
+      { $pull: { batches: { batchName: batch } } }
+    );
+    res.status(200).json({ batch: batch, name: component });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
   }
 };
 
@@ -97,4 +114,5 @@ module.exports = {
   updateBatch,
   deleteComponent,
   updateProcess,
+  deleteBatch,
 };

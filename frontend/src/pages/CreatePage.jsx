@@ -1,12 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { createComponent } from "../features/Components/componentSlice";
+import Nav from "../components/Nav";
+import {
+  createComponent,
+  reset,
+  setIsError,
+} from "../features/Components/componentSlice";
 
 const CreatePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  let { isError, message, isSuccess } = useSelector(
+    (state) => state?.components
+  );
   const [names, setNames] = useState({ componentName: "", companyName: "" });
   const [process, setProcess] = useState({
     process1: "",
@@ -35,7 +44,7 @@ const CreatePage = () => {
       companyName: names.companyName,
       process: myProcess,
     };
-    console.log(myObj);
+    // console.log(myObj);
     setNames({ componentName: "", companyName: "" });
     setProcess({
       process1: "",
@@ -49,15 +58,46 @@ const CreatePage = () => {
       process9: "",
       process10: "",
     });
-    try {
-      await dispatch(createComponent(myObj));
-      navigate("/");
-    } catch (error) {
-      console.log(error);
-    }
+
+    // console.log("Hello");
+    // console.log(myObj);
+    dispatch(reset());
+    dispatch(createComponent(myObj));
   };
+
+  useEffect(() => {
+    if (!isError && isSuccess && message === "") {
+      navigate("/");
+      dispatch(reset());
+    }
+  }, [isError, message, isSuccess, navigate, dispatch]);
+
   return (
     <>
+      <Nav />
+      {isError && (
+        <div
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+          role="alert"
+        >
+          <strong className="font-bold mx-10">{message}</strong>
+          {/* <span className="block sm:inline">{message}</span> */}
+
+          <span className="absolute top-0 bottom-0 right-0 px-4 py-3">
+            <button onClick={() => dispatch(setIsError())}>
+              <svg
+                className="fill-current h-6 w-6 text-red-500"
+                role="button"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+              >
+                <title>Close</title>
+                <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+              </svg>
+            </button>
+          </span>
+        </div>
+      )}
       <div className="mt-4 ml-4 mr-4">
         <form onSubmit={handleClick}>
           <div className="mb-6">
@@ -85,7 +125,7 @@ const CreatePage = () => {
 
             <div className="mt-4 ml-4 mr-4">
               <label
-                for="default-input"
+                htmlFor="default-input"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
               >
                 Company Name
@@ -109,7 +149,7 @@ const CreatePage = () => {
 
             <div className="mt-4 ml-4 mr-4">
               <label
-                for="default-input"
+                htmlFor="default-input"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
               >
                 Process1 Name
@@ -126,7 +166,7 @@ const CreatePage = () => {
             </div>
             <div className="mt-4 ml-4 mr-4">
               <label
-                for="default-input"
+                htmlFor="default-input"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
               >
                 Process2 Name
@@ -143,7 +183,7 @@ const CreatePage = () => {
             </div>
             <div className="mt-4 ml-4 mr-4">
               <label
-                for="default-input"
+                htmlFor="default-input"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
               >
                 Process3 Name
@@ -160,7 +200,7 @@ const CreatePage = () => {
             </div>
             <div className="mt-4 ml-4 mr-4">
               <label
-                for="default-input"
+                htmlFor="default-input"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
               >
                 Process4 Name
@@ -177,7 +217,7 @@ const CreatePage = () => {
             </div>
             <div className="mt-4 ml-4 mr-4">
               <label
-                for="default-input"
+                htmlFor="default-input"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
               >
                 Process5 Name
@@ -194,7 +234,7 @@ const CreatePage = () => {
             </div>
             <div className="mt-4 ml-4 mr-4">
               <label
-                for="default-input"
+                htmlFor="default-input"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
               >
                 Process6 Name
@@ -211,7 +251,7 @@ const CreatePage = () => {
             </div>
             <div className="mt-4 ml-4 mr-4">
               <label
-                for="default-input"
+                htmlFor="default-input"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
               >
                 Process7 Name
@@ -228,7 +268,7 @@ const CreatePage = () => {
             </div>
             <div className="mt-4 ml-4 mr-4">
               <label
-                for="default-input"
+                htmlFor="default-input"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
               >
                 Process8 Name
@@ -245,7 +285,7 @@ const CreatePage = () => {
             </div>
             <div className="mt-4 ml-4 mr-4">
               <label
-                for="default-input"
+                htmlFor="default-input"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
               >
                 Process9 Name
@@ -262,7 +302,7 @@ const CreatePage = () => {
             </div>
             <div className="mt-4 ml-4 mr-4">
               <label
-                for="default-input"
+                htmlFor="default-input"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
               >
                 Process10 Name

@@ -6,21 +6,36 @@ import Batch from "./pages/Batches";
 import CreateBatch from "./pages/CreateBatch";
 import EditProcess from "./pages/EditProcess";
 import Process from "./pages/Process";
+import Login from "./pages/Login";
+import { useSelector } from "react-redux";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
+  let user = useSelector((state) => state.components?.user);
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route exact path="/:name/:batchName/process" element={<Process />} />
-          <Route path="/component/create" element={<CreatePage />} />
-          <Route path="/" element={<Home />} />
-          <Route path="/:name/batches" element={<Batch />} />
-          <Route path="/:name/create-batch" element={<CreateBatch />} />
+          <Route
+            exact
+            path="/:name/:batchName/process"
+            element={user ? <Process /> : <Login />}
+          />
+          <Route
+            path="/component/create"
+            element={user ? <CreatePage /> : <Login />}
+          />
+          <Route path="/" element={user ? <Home /> : <Login />} />
+          <Route path="/:name/batches" element={user ? <Batch /> : <Login />} />
+          <Route
+            path="/:name/create-batch"
+            element={user ? <CreateBatch /> : <Login />}
+          />
           <Route
             path="/:name/:batchName/edit-process"
-            element={<EditProcess />}
+            element={user ? <EditProcess /> : <Login />}
           />
+          <Route path="/*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
     </div>

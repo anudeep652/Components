@@ -2,21 +2,73 @@ import React from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { getAllComponents } from "../features/Components/componentSlice";
+import {
+  deleteAComponent,
+  getAllComponents,
+} from "../features/Components/componentSlice";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const Table = () => {
   const dispatch = useDispatch();
 
-  let components = useSelector(
-    (state) => state?.components?.components?.components
-  );
+  let components = useSelector((state) => state?.components?.components);
 
   const calculateBatches = (component) => {
     let temp = 0;
     component?.batches?.map((el) => (temp += el.issuedQuantityB));
     return temp;
   };
-  console.log(components);
+  // console.log(components);
+
+  const handleClick = (component) => {
+    // console.log(component);
+
+    dispatch(deleteAComponent(component));
+  };
+
+  const calcCompleted = (component) => {
+    let completed = 0;
+    let temp;
+
+    temp =
+      component?.batches?.length > 0
+        ? component?.batches?.forEach((el) => {
+            // console.log(el.process.length)
+            if (el.process.length > 0) {
+              completed += el?.process[el.process.length - 1]?.issuedQuantity;
+            }
+          })
+        : 0;
+
+    return completed;
+  };
+
+  const calcRejected = (component) => {
+    let batchQuantity = 0;
+    let totalProcessQuantity = 0;
+    batchQuantity =
+      component?.batches?.length > 0
+        ? component?.batches?.reduce((acc, b) => (acc += b?.issuedQuantityB), 0)
+        : 0;
+
+    let temp;
+    temp =
+      component?.batches?.length > 0
+        ? component?.batches.forEach((el) => {
+            if (el.process.length > 0) {
+              if (el.process.every((el) => el?.issuedQuantity === 0)) {
+                // console.log("Hi");
+                batchQuantity = 0;
+              }
+              for (let p of el.process) {
+                totalProcessQuantity += p.issuedQuantity;
+              }
+            }
+          })
+        : 0;
+
+    return batchQuantity - totalProcessQuantity;
+  };
 
   useEffect(() => {
     dispatch(getAllComponents());
@@ -37,7 +89,16 @@ const Table = () => {
               No of Batch
             </th>
             <th scope="col" className="py-3 px-6">
+              Completed No
+            </th>
+            <th scope="col" className="py-3 px-6">
+              Rejected No
+            </th>
+            <th scope="col" className="py-3 px-6">
               Company name
+            </th>
+            <th scope="col" className="py-3 px-6">
+              Delete Component
             </th>
           </tr>
         </thead>
@@ -58,9 +119,21 @@ const Table = () => {
               <td className="py-4 px-6">
                 {component.batches ? component.batches.length : 0}
               </td>
+              <td>{calcCompleted(component)}</td>
+              <td>{calcRejected(component)}</td>
               <td className="py-4 px-6">
                 {component.companyName ? component.companyName : ""}
               </td>
+
+              <button className="py-4 px-16">
+                <DeleteIcon
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleClick(component.name);
+                  }}
+                  fontSize="medium"
+                />
+              </button>
             </tr>
           ))}
 

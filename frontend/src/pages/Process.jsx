@@ -2,22 +2,21 @@ import React from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
-import {
-  getAllComponents,
-  setCurrComponent,
-} from "../features/Components/componentSlice";
+import Nav from "../components/Nav";
+
+import { setCurrComponent } from "../features/Components/componentSlice";
 const Process = () => {
   const { name, batchName } = useParams();
 
-  let { currComponent } = useSelector((state) => state.components);
+  const { currComponent } = useSelector((state) => state.components);
   // currComponent = useSelector((state) => state.components?.currComponent);
-  console.log(currComponent);
-  let batchIndex = currComponent[0].batches.map(
+  // console.log(currComponent);
+  let batchIndex = currComponent[0]?.batches?.map(
     (el, index) => el.batchName === batchName && index
   );
   batchIndex = batchIndex.filter((el) => typeof el === "number");
-  console.log(batchIndex);
-  let { components } = useSelector((state) => state.components?.components);
+  // console.log(batchIndex);
+  let { components } = useSelector((state) => state.components);
 
   const dispatch = useDispatch();
 
@@ -28,7 +27,7 @@ const Process = () => {
   ]?.process.every((el) => el.issuedQuantity === 0);
 
   useEffect(() => {
-    dispatch(getAllComponents());
+    // dispatch(getAllComponents());
     dispatch(setCurrComponent(component));
   }, []);
   // const isProcessQuantityEmpty = (index) => {
@@ -36,13 +35,14 @@ const Process = () => {
   //   return component[0]?.batches[batchIndex[0]]?.process[index]?.issuedQuantity === 0
   // }
 
-  let issuedQuantity = currComponent[0].batches.filter(
+  let issuedQuantity = currComponent[0].batches?.filter(
     (c) => c.batchName === batchName
   );
-  console.log(issuedQuantity);
+  // console.log(issuedQuantity);
 
   return (
     <>
+      <Nav />
       <Link
         to={`/${name}/${batchName}/edit-process`}
         className="duration-300 ml-4 mt-4 mb-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
