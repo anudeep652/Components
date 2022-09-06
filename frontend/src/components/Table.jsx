@@ -56,16 +56,17 @@ const Table = () => {
       component?.batches?.length > 0
         ? component?.batches.forEach((el) => {
             if (el.process.length > 0) {
-              if (el.process.every((el) => el?.issuedQuantity === 0)) {
-                // console.log("Hi");
-                batchQuantity = 0;
-              }
+              // if (el.process.every((el) => el?.issuedQuantity === 0)) {
+              //   totalProcessQuantity += 0;
+              // }
               for (let p of el.process) {
                 totalProcessQuantity += p.issuedQuantity;
               }
             }
           })
         : 0;
+
+    if (totalProcessQuantity === 0) return 0;
 
     return batchQuantity - totalProcessQuantity;
   };
