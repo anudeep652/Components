@@ -44,31 +44,25 @@ const Table = () => {
   };
 
   const calcRejected = (component) => {
-    let batchQuantity = 0;
-    let totalProcessQuantity = 0;
-    batchQuantity =
-      component?.batches?.length > 0
-        ? component?.batches?.reduce((acc, b) => (acc += b?.issuedQuantityB), 0)
-        : 0;
+    let rejected = 0;
 
-    let temp;
-    temp =
-      component?.batches?.length > 0
-        ? component?.batches.forEach((el) => {
-            if (el.process.length > 0) {
-              // if (el.process.every((el) => el?.issuedQuantity === 0)) {
-              //   totalProcessQuantity += 0;
-              // }
-              for (let p of el.process) {
-                totalProcessQuantity += p.issuedQuantity;
-              }
-            }
-          })
-        : 0;
+    component?.batches?.length > 0 &&
+      component?.batches.forEach((b) => {
+        if (
+          b.process.length > 0 &&
+          b.process.every((p) => p.issuedQuantity === 0)
+        ) {
+          rejected += 0;
+        } else {
+          if (b?.process.length > 0) {
+            rejected +=
+              b.issuedQuantityB -
+              b.process.reduce((acc, p) => (acc += p?.issuedQuantity), 0);
+          }
+        }
+      });
 
-    if (totalProcessQuantity === 0) return 0;
-
-    return batchQuantity - totalProcessQuantity;
+    return rejected;
   };
 
   useEffect(() => {
