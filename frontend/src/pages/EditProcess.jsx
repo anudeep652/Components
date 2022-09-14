@@ -11,6 +11,7 @@ import {
 const EditProcess = () => {
   let [accepted, setAccepted] = useState([]);
   let [rejected, setRejected] = useState([]);
+  const [error, setError] = useState(false);
 
   let { isError, message, isSuccess } = useSelector(
     (state) => state?.components
@@ -38,20 +39,20 @@ const EditProcess = () => {
   batchIndex = batchIndex.filter((el) => typeof el === "number");
 
   let component = components?.filter((c) => c.name === name);
-  console.log(component);
+  // console.log(component);
 
   let currBatch = component[0]?.batches.map(
     (el) => el.batchName === batchName && el
   );
   currBatch = currBatch?.filter((el) => typeof el === "object");
 
-  console.log(currBatch);
+  // console.log(currBatch);
 
   let isProcessQuantityEmpty = currComponent[0]?.batches[
     batchIndex[0]
   ]?.process.every((el) => el.issuedQuantity === 0);
 
-  console.log(isProcessQuantityEmpty);
+  // console.log(isProcessQuantityEmpty);
 
   // const isProcessQuantityEmptyF = (index) => {
   //   return (
@@ -158,11 +159,16 @@ const EditProcess = () => {
 
     // console.log(data);
     // console.log(tempArray);
-    console.log(data);
-    // console.log(rejected.length > 0)
-    // console.log(rejected);
+    if (data.some((el) => el.issuedQuantity < 0)) {
+      setError(true);
+    } else {
+      setError(false);
 
-    // await dispatch(modifyProcess({ process: data }));
+      // console.log(data);
+      dispatch(modifyProcess({ process: data }));
+    }
+
+    // console.log(rejected);
   };
 
   useEffect(() => {
@@ -175,6 +181,31 @@ const EditProcess = () => {
   return (
     <>
       <Nav />
+      {error && (
+        <div
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+          role="alert"
+        >
+          <strong className="font-bold mx-10">
+            Issued quantity is negative
+          </strong>
+          {/* <span className="block sm:inline">{message}</span> */}
+
+          <span className="absolute top-0 bottom-0 right-0 px-4 py-3">
+            <button onClick={() => setError(false)}>
+              <svg
+                className="fill-current h-6 w-6 text-red-500"
+                role="button"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+              >
+                <title>Close</title>
+                <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+              </svg>
+            </button>
+          </span>
+        </div>
+      )}
       <form onSubmit={handleSubmit}>
         <div className=" mt-8 overflow-x-auto relative shadow-md sm:rounded-lg">
           <table className="table-auto w-full text-sm text-left text-gray-500 dark:text-gray-400">
