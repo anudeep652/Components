@@ -1,6 +1,6 @@
 const axios = require("axios");
 
-const URL = "https://components-164g.onrender.com";
+const URL = "http://localhost:5000";
 //get all components
 export const getComponents = async () => {
   try {

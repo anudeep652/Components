@@ -108,7 +108,8 @@ const EditProcess = () => {
           return [
             ...tempArray,
             (tempArray[el.index].issuedQuantity -= el.issuedQuantity),
-            (tempArray[el.index + 1].issuedQuantity += el.issuedQuantity),
+            tempArray[el.index + 1]?.issuedQuantity &&
+              (tempArray[el.index + 1].issuedQuantity += el.issuedQuantity),
           ];
         } else {
           return el;
@@ -145,11 +146,11 @@ const EditProcess = () => {
       return 0;
     };
 
-    tempArray?.map((el, index) => {
-      if (typeof el !== "number") {
+    tempArray?.forEach((el, index) => {
+      if (typeof el !== "number" && typeof el !== "undefined") {
         data.push({
-          processName: el.processName,
-          issuedQuantity: el.issuedQuantity,
+          processName: el?.processName,
+          issuedQuantity: el?.issuedQuantity,
           rejected: calcRejected(el, index),
         });
       }
@@ -157,11 +158,11 @@ const EditProcess = () => {
 
     // console.log(data);
     // console.log(tempArray);
-    // console.log(data);
+    console.log(data);
     // console.log(rejected.length > 0)
     // console.log(rejected);
 
-    await dispatch(modifyProcess({ process: data }));
+    // await dispatch(modifyProcess({ process: data }));
   };
 
   useEffect(() => {
