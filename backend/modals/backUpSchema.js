@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const componentSchema = new Schema(
+const backUpSchema = new Schema(
   {
     name: {
       type: String,
@@ -16,7 +16,7 @@ const componentSchema = new Schema(
       },
     ],
 
-    batches: [
+    backUpBatches: [
       {
         batchName: { type: String },
         progress: String,
@@ -46,4 +46,4 @@ const componentSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Component", componentSchema);
+module.exports = mongoose.model("Backup", backUpSchema);

@@ -1,5 +1,6 @@
 const { findOne, findOneAndUpdate } = require("../modals/componentsSchema");
 const Component = require("../modals/componentsSchema");
+const Backup = require("../modals/backUpSchema");
 
 //create a new component
 const createComponent = async (req, res) => {
@@ -86,7 +87,15 @@ const deleteComponent = async (req, res) => {
     if (!haveComponent)
       return res.status(400).json({ error: "this document doesn't exists" });
 
+    const backup = await Backup.create({
+      name: haveComponent.name,
+      companyName: haveComponent.companyName,
+      process: haveComponent.process,
+      backUpBatches: haveComponent.batches,
+    });
+
     await haveComponent.remove();
+    // console.log(haveComponent);
     res.status(200).json({ component });
   } catch (error) {
     return res.status(400).json({ error: error.message });
@@ -96,6 +105,35 @@ const deleteComponent = async (req, res) => {
 const deleteBatch = async (req, res) => {
   try {
     const { batch, component } = req.params;
+
+    const haveComponent = await Component.findOne({ name: component });
+    if (!haveComponent)
+      return res.status(400).json({ error: "This component doesn't exists " });
+
+    const isInBackUp = await Backup.findOne({ name: component });
+    // console.log(isInBackUp);
+
+    const batchToBeBackUp = await Component.findOne(
+      { name: component },
+      {
+        batches: {
+          $elemMatch: {
+            batchName: batch,
+          },
+        },
+      }
+    );
+    // console.log(batchToBeBackUp);
+
+    if (!isInBackUp) {
+      await Backup.create({
+        name: haveComponent.name,
+        backUpBatches: batchToBeBackUp.batches[0],
+      });
+    } else {
+      isInBackUp.backUpBatches.push(batchToBeBackUp.batches[0]);
+      isInBackUp.save();
+    }
 
     await Component.updateOne(
       { name: component },

@@ -78,6 +78,12 @@ const Batch = () => {
     }, 0);
   };
 
+  const calcTotalQuantityRejected = (index) => {
+    return component[0]?.batches?.reduce((acc, b) => {
+      return acc + b.process[index].rejected;
+    }, 0);
+  };
+
   return (
     <div>
       <Nav />
@@ -109,7 +115,10 @@ const Batch = () => {
                 Process name
               </th>
               <th scope="col" className="py-3 px-6">
-                Total Quantity Running in all batches per process
+                Total quantity running in all batches per process
+              </th>
+              <th scope="col" className="py-3 px-6">
+                Total quantity rejected in all batches per process
               </th>
             </tr>
           </thead>
@@ -126,6 +135,9 @@ const Batch = () => {
                   {p.processName}
                 </th>
                 <td className="py-4 px-6">{calcTotalQuantity(index)}</td>
+                <td className="py-4 px-6">
+                  {calcTotalQuantityRejected(index)}
+                </td>
               </tr>
             ))}
           </tbody>

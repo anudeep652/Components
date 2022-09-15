@@ -141,7 +141,7 @@ const EditProcess = () => {
     const calcRejected = (el, index) => {
       for (let r of rejected) {
         if (r.processName === el.processName) {
-          return r.issuedQuantity;
+          return el.rejected + r.issuedQuantity;
         }
       }
       return 0;
