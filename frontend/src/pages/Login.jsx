@@ -55,6 +55,7 @@ const Login = () => {
             <form onSubmit={handleSubmit}>
               <div className="relative z-0 mb-8 w-full group">
                 <input
+                  autoComplete="off"
                   type="email"
                   name="floating_email"
                   id="floating_email"
