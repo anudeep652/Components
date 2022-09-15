@@ -109,8 +109,8 @@ const EditProcess = () => {
           return [
             ...tempArray,
             (tempArray[el.index].issuedQuantity -= el.issuedQuantity),
-            tempArray[el.index + 1]?.issuedQuantity &&
-              (tempArray[el.index + 1].issuedQuantity += el.issuedQuantity),
+            // tempArray[el.index + 1]?.issuedQuantity &&
+            (tempArray[el.index + 1].issuedQuantity += el?.issuedQuantity),
           ];
         } else {
           return el;
@@ -173,7 +173,7 @@ const EditProcess = () => {
 
   useEffect(() => {
     if (!isError && isSuccess && message === "") {
-      navigate(`/${name}/${batchName}/process`);
+      navigate(`/${name}/${batchName}/process`, { replace: true });
       dispatch(reset());
     }
   }, [isError, isSuccess, navigate, name, message, dispatch, batchName]);
@@ -227,7 +227,7 @@ const EditProcess = () => {
             </thead>
             <tbody id="box">
               {currComponent[0]?.batches[batchIndex[0]]?.process?.map(
-                (comp, index) => (
+                (comp, index, arr) => (
                   <tr
                     className="bg-white border-b dark:bg-gray-900 dark:border-gray-700"
                     key={index}
@@ -246,35 +246,40 @@ const EditProcess = () => {
                         : comp?.issuedQuantity}
                     </td>
                     <td className="py-4 px-6">
-                      <input
-                        value={accepted[index]?.value}
-                        onChange={(e) =>
-                          (accepted[index] = {
-                            processName: comp.processName,
-                            issuedQuantity: Number(e.target.value),
-                            index: Number(index),
-                          })
-                        }
-                        type="number"
-                        id="visitors"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:fo
+                      {!(index === arr.length - 1) && (
+                        <input
+                          value={accepted[index]?.value}
+                          onChange={(e) =>
+                            (accepted[index] = {
+                              processName: comp.processName,
+                              issuedQuantity: Number(e.target.value),
+                              index: Number(index),
+                            })
+                          }
+                          type="number"
+                          id="visitors"
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:fo
                         cus:ring-blue-500 dark:focus:border-blue-500"
-                      />
+                        />
+                      )}
                     </td>
                     <td className="py-4 px-6">
-                      <input
-                        value={rejected[index]?.value}
-                        onChange={(e) =>
-                          (rejected[index] = {
-                            processName: comp.processName,
-                            issuedQuantity: Number(e.target.value),
-                            index: Number(index),
-                          })
-                        }
-                        type="number"
-                        id="visitors"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      />
+                      {!(index === arr.length - 1) && (
+                        <input
+                          aria-hidden
+                          value={rejected[index]?.value}
+                          onChange={(e) =>
+                            (rejected[index] = {
+                              processName: comp.processName,
+                              issuedQuantity: Number(e.target.value),
+                              index: Number(index),
+                            })
+                          }
+                          type="number"
+                          id="visitors"
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
+                        />
+                      )}
                     </td>
                   </tr>
                 )
