@@ -87,12 +87,16 @@ const deleteComponent = async (req, res) => {
     if (!haveComponent)
       return res.status(400).json({ error: "this document doesn't exists" });
 
-    const backup = await Backup.create({
-      name: haveComponent.name,
-      companyName: haveComponent.companyName,
-      process: haveComponent.process,
-      backUpBatches: haveComponent.batches,
-    });
+    const isInBackUp = await Backup.findOne({ name: component });
+
+    if (!isInBackUp) {
+      const backup = await Backup.create({
+        name: haveComponent.name,
+        companyName: haveComponent.companyName,
+        process: haveComponent.process,
+        backUpBatches: haveComponent.batches,
+      });
+    }
 
     await haveComponent.remove();
     // console.log(haveComponent);
@@ -128,6 +132,8 @@ const deleteBatch = async (req, res) => {
     if (!isInBackUp) {
       await Backup.create({
         name: haveComponent.name,
+        companyName: haveComponent.companyName,
+        process: haveComponent.process,
         backUpBatches: batchToBeBackUp.batches[0],
       });
     } else {
