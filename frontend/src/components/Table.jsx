@@ -43,6 +43,24 @@ const Table = () => {
     return completed;
   };
 
+  const calcRemaining = (component) => {
+    // console.log(component);
+    if (component?.batches?.length > 0) {
+      return component?.batches?.reduce((acc, b) => {
+        if (b?.process?.length > 0) {
+          return (acc += b?.process?.every((p) => p?.issuedQuantity === 0)
+            ? b.issuedQuantityB
+            : b?.process?.reduce((a, p) => (a += p?.issuedQuantity), 0) -
+              b?.process[b?.process.length - 1].issuedQuantity);
+        } else {
+          return 0;
+        }
+      }, 0);
+    } else {
+      return 0;
+    }
+  };
+
   const calcRejected = (component) => {
     let rejected = 0;
 
@@ -87,6 +105,9 @@ const Table = () => {
               Completed No
             </th>
             <th scope="col" className="py-3 px-6">
+              Remaining No
+            </th>
+            <th scope="col" className="py-3 px-6">
               Rejected No
             </th>
             <th scope="col" className="py-3 px-6">
@@ -114,8 +135,9 @@ const Table = () => {
               <td className="py-4 px-6">
                 {component.batches ? component.batches.length : 0}
               </td>
-              <td>{calcCompleted(component)}</td>
-              <td>{calcRejected(component)}</td>
+              <td className="py-4 px-6">{calcCompleted(component)}</td>
+              <td className="py-4 px-6">{calcRemaining(component)}</td>
+              <td className="py-4 px-6">{calcRejected(component)}</td>
               <td className="py-4 px-6">
                 {component.companyName ? component.companyName : ""}
               </td>

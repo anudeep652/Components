@@ -1,26 +1,34 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser, setIsError } from "../features/Components/componentSlice";
+import {
+  loginUser,
+  reset,
+  setIsError,
+} from "../features/Components/componentSlice";
 // require("dotenv").config();
 
 const Login = () => {
   let { isError, message } = useSelector((state) => state?.components);
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const dispatch = useDispatch();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (email === "" || password === "") {
-      // console.log("please fill all the fields");
+    if (username === "" || password === "") {
+      console.log("please fill all the fields");
     } else {
-      // console.log(email);
-      dispatch(loginUser({ email: email, password: password }));
+      console.log(username, password);
+      dispatch(loginUser({ username: username, password: password }));
     }
   };
+
+  useEffect(() => {
+    dispatch(reset());
+  }, [dispatch]);
 
   return (
     <section className="h-screen">
@@ -56,20 +64,20 @@ const Login = () => {
               <div className="relative z-0 mb-8 w-full group">
                 <input
                   autoComplete="off"
-                  type="email"
+                  type="text"
                   name="floating_email"
                   id="floating_email"
                   className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                   placeholder=" "
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                 />
                 <label
                   htmlFor="floating_email"
                   className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
                 >
-                  Email address
+                  Username
                 </label>
               </div>
 
