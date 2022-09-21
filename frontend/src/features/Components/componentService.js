@@ -1,6 +1,6 @@
 const axios = require("axios");
 
-const URL = "https://components100.herokuapp.com/";
+const URL = "https://components100.herokuapp.com";
 //get all components
 export const getComponents = async () => {
   try {

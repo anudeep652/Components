@@ -23,7 +23,6 @@ const initialState = {
   components: [],
   currComponent: {},
   currBatchName: null,
-  isSuccess: false,
 };
 
 export const getAllComponents = createAsyncThunk(
