@@ -10,7 +10,7 @@ const login = (req, res) => {
     return res.status(200).json({ user: username });
   } else if (
     username === process.env.ADMIN_USERNAME &&
-    process.env.ADMIN_PASSWORD
+    password === process.env.ADMIN_PASSWORD
   ) {
     return res.status(200).json({ user: username });
   } else {
