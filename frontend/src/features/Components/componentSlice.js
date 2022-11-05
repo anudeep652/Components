@@ -19,6 +19,7 @@ const initialState = {
   user: null,
   isError: false,
   isSuccess: false,
+  isLoggedIn: false,
   message: "",
   components: [],
   currComponent: {},
@@ -58,7 +59,8 @@ export const modifyBatches = createAsyncThunk(
   async (batches, thunkAPI) => {
     try {
       const name = thunkAPI.getState().components.currComponent;
-      // console.log(name[0].name);
+      console.log(name[0].name);
+      console.log(batches);
       return await modifyAllBatches(batches, name[0].name);
     } catch (error) {
       (error.response && error.response.data && error.response.data.message) ||
@@ -159,6 +161,17 @@ export const componentSlice = createSlice({
       state.isSuccess = true;
       state.message = "Batch already exists";
     },
+    logout: (state) => {
+      localStorage.clear();
+      state.user = null;
+      state.isError = false;
+      state.isSuccess = false;
+      state.isLoggedIn = false;
+      state.message = "";
+      state.components = [];
+      state.currComponent = {};
+      state.currBatchName = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -237,6 +250,7 @@ export const componentSlice = createSlice({
         state.user = action.payload?.user;
         state.isError = false;
         state.message = "";
+        state.isLoggedIn = true;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isError = true;
@@ -251,6 +265,7 @@ export const {
   setCurrBatch,
   setIsError,
   setBatchError,
+  logout,
 } = componentSlice.actions;
 
 export default componentSlice.reducer;

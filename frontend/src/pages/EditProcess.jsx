@@ -139,12 +139,14 @@ const EditProcess = () => {
     }
 
     const calcRejected = (el, index) => {
+      if (rejected.length < 1) return el.rejected;
       for (let r of rejected) {
         if (r.processName === el.processName) {
-          return el.rejected + r.issuedQuantity;
+          return el?.rejected + r?.issuedQuantity;
+        } else {
+          return el?.rejected;
         }
       }
-      return 0;
     };
 
     tempArray?.forEach((el, index) => {

@@ -37,10 +37,10 @@ const CreatePage = () => {
     const newArr = arr.filter((array) => array[1] !== "");
     let myProcess = [];
 
-    newArr.forEach((a) => myProcess.push({ processName: a[1] }));
+    newArr.forEach((a) => myProcess.push({ processName: a[1].trim() }));
 
     let myObj = {
-      name: names.componentName,
+      name: names.componentName.trim(),
       companyName: names.companyName,
       process: myProcess,
     };

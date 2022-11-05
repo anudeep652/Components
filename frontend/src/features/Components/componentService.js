@@ -29,6 +29,7 @@ export const modifyAllBatches = async (data, name) => {
   // console.log(response.data);
   return response.data;
 };
+
 export const modifyAllProcess = async (data, name, batch) => {
   try {
     const response = await axios.put(
@@ -43,12 +44,8 @@ export const modifyAllProcess = async (data, name, batch) => {
 };
 
 export const deleteComponent = async (component) => {
-  try {
-    const response = await axios.delete(`${URL}/components/${component}`);
-    return response.data;
-  } catch (error) {
-    // console.log(error);
-  }
+  const response = await axios.delete(`${URL}/components/${component}`);
+  return response.data;
 };
 
 export const deleteBatch = async (batch, component) => {

@@ -7,11 +7,30 @@ import {
   getAllComponents,
 } from "../features/Components/componentSlice";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { Box, Button, Modal, Typography } from "@mui/material";
+import { useState } from "react";
 
 const Table = () => {
   const dispatch = useDispatch();
+  const [openModal, setOpenModal] = useState(false);
+  const [deleteComponent, setDeleteComponent] = useState("");
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400,
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    pt: 2,
+    px: 4,
+    pb: 3,
+  };
 
   let components = useSelector((state) => state?.components?.components);
+  let user = useSelector((state) => state.components.user);
+  console.log(user);
 
   const calculateBatches = (component) => {
     let temp = 0;
@@ -21,9 +40,10 @@ const Table = () => {
   // console.log(components);
 
   const handleClick = (component) => {
-    // console.log(component);
+    console.log(component);
 
     dispatch(deleteAComponent(component));
+    setDeleteComponent("");
   };
 
   const calcCompleted = (component) => {
@@ -65,7 +85,7 @@ const Table = () => {
     let rejected = 0;
 
     component?.batches?.length > 0 &&
-      component?.batches.forEach((b) => {
+      component?.batches?.forEach((b) => {
         if (
           b.process.length > 0 &&
           b.process.every((p) => p.issuedQuantity === 0)
@@ -92,30 +112,34 @@ const Table = () => {
       <table className="table-auto w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
-            <th scope="col" className="py-3 px-6">
+            <th scope="col" className="py-3 px-6 ">
               Component name
             </th>
-            <th scope="col" className="py-3 px-6">
-              Total no
-            </th>
-            <th scope="col" className="py-3 px-6">
-              No of Batch
-            </th>
-            <th scope="col" className="py-3 px-6">
-              Completed No
-            </th>
-            <th scope="col" className="py-3 px-6">
-              Remaining No
-            </th>
-            <th scope="col" className="py-3 px-6">
-              Rejected No
-            </th>
-            <th scope="col" className="py-3 px-6">
-              Company name
-            </th>
-            <th scope="col" className="py-3 px-6">
-              Delete Component
-            </th>
+            {user !== "unique" && (
+              <>
+                <th scope="col" className="py-3 px-6">
+                  Total no
+                </th>
+                <th scope="col" className="py-3 px-6">
+                  No of Batch
+                </th>
+                <th scope="col" className="py-3 px-6">
+                  Completed No
+                </th>
+                <th scope="col" className="py-3 px-6">
+                  Remaining No
+                </th>
+                <th scope="col" className="py-3 px-6">
+                  Rejected No
+                </th>
+                <th scope="col" className="py-3 px-6">
+                  Company name
+                </th>
+                <th scope="col" className="py-3 px-6">
+                  Delete Component
+                </th>
+              </>
+            )}
           </tr>
         </thead>
         <tbody id="box">
@@ -125,32 +149,82 @@ const Table = () => {
               className="bg-white border-b dark:bg-gray-900 dark:border-gray-700"
               key={index}
             >
-              <th
-                scope="row"
-                className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-              >
-                <Link to={`/${component.name}/batches`}>{component.name}</Link>
-              </th>
-              <td className="py-4 px-6">{calculateBatches(component)}</td>
-              <td className="py-4 px-6">
-                {component.batches ? component.batches.length : 0}
-              </td>
-              <td className="py-4 px-6">{calcCompleted(component)}</td>
-              <td className="py-4 px-6">{calcRemaining(component)}</td>
-              <td className="py-4 px-6">{calcRejected(component)}</td>
-              <td className="py-4 px-6">
-                {component.companyName ? component.companyName : ""}
-              </td>
+              {user !== "unique" ? (
+                <th
+                  scope="row"
+                  className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                >
+                  <Link to={`/${component.name}/batches`}>
+                    {component.name}
+                  </Link>
+                </th>
+              ) : (
+                <th
+                  scope="row"
+                  className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                >
+                  <Link to={`/${component.name}/batches`}>
+                    {component.name}
+                  </Link>
+                </th>
+              )}
+              {user !== "unique" && (
+                <>
+                  <td className="py-4 px-6">{calculateBatches(component)}</td>
+                  <td className="py-4 px-6">
+                    {component.batches ? component.batches.length : 0}
+                  </td>
+                  <td className="py-4 px-6">{calcCompleted(component)}</td>
+                  <td className="py-4 px-6">{calcRemaining(component)}</td>
+                  <td className="py-4 px-6">{calcRejected(component)}</td>
+                  <td className="py-4 px-6">
+                    {component.companyName ? component.companyName : ""}
+                  </td>
+                  <Modal open={openModal}>
+                    <Box sx={style}>
+                      <Typography
+                        id="modal-modal-title"
+                        variant="h6"
+                        component="h2"
+                      >
+                        Are you sure want to delete?
+                      </Typography>
+                      <Button
+                        className="py-3"
+                        onClick={(e) => {
+                          console.log(component.name);
+                          handleClick(deleteComponent);
+                          setOpenModal(false);
+                          setDeleteComponent("");
+                        }}
+                      >
+                        Yes
+                      </Button>
+                      <Button
+                        className="py-5"
+                        onClick={(e) => {
+                          setOpenModal(false);
+                          setDeleteComponent("");
+                        }}
+                      >
+                        No
+                      </Button>
+                    </Box>
+                  </Modal>
 
-              <button className="py-4 px-16">
-                <DeleteIcon
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleClick(component.name);
-                  }}
-                  fontSize="medium"
-                />
-              </button>
+                  <button className="py-4 px-6">
+                    <DeleteIcon
+                      fontSize="medium"
+                      className="cursor-pointer"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setDeleteComponent(component.name);
+                        setOpenModal(true);
+                      }}
+                    />
+                  </button>
+                </>
+              )}
             </tr>
           ))}
 

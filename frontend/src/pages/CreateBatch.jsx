@@ -37,7 +37,7 @@ const CreateBatch = () => {
       dispatch(setBatchError());
     } else {
       tempArray.push({
-        batchName: batchItems.batchName,
+        batchName: batchItems.batchName.trim(),
         issuedQuantityB: Number(batchItems.issuedQuantity),
         process: requiredComponent[0].process,
       });

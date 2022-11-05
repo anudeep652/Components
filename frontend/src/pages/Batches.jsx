@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -9,12 +9,15 @@ import {
   setCurrComponent,
 } from "../features/Components/componentSlice";
 import Nav from "../components/Nav";
+import { Box, Button, Modal, Typography } from "@mui/material";
 
 const Batch = () => {
   const dispatch = useDispatch();
+  const [openModal, setOpenModal] = useState(false);
+  const [deleteBatch, setDeleteBatch] = useState("");
   // const navigate = useNavigate();
   const { name } = useParams();
-  let { components } = useSelector((state) => state?.components);
+  let { components, user } = useSelector((state) => state?.components);
   // let currComponent = useSelector((state) => state?.components?.currComponent);
 
   let component = components?.filter((c) => c.name === name);
@@ -28,18 +31,31 @@ const Batch = () => {
   // console.log(components)
   // console.log(currComponent);
 
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400,
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    pt: 2,
+    px: 4,
+    pb: 3,
+  };
   const handleClick = (batchName) => {
-    // console.log(batchName);
+    // console.log(component);
     dispatch(deleteABatch(batchName));
-    // navigate("/");
+    setDeleteBatch("");
   };
 
   const calcProgress = (name) => {
     const reqBatch = component[0].batches.filter((b) => b.batchName === name);
     // console.log(reqBatch);
     if (
-      reqBatch[0].process[0]?.issuedQuantity === 0 &&
-      reqBatch[0].process[1].issuedQuantity !== 0
+      reqBatch[0]?.process[0]?.issuedQuantity === 0 &&
+      reqBatch[0]?.process[1]?.issuedQuantity !== 0
     ) {
       return "Completed";
     } else {
@@ -84,6 +100,17 @@ const Batch = () => {
     }, 0);
   };
 
+  const calcRejected = (batchName) => {
+    const reqBatch = component[0].batches.filter(
+      (b) => b.batchName === batchName
+    );
+
+    return (
+      reqBatch[0].issuedQuantityB -
+      reqBatch[0]?.process.reduce((acc, p) => acc + p.issuedQuantity, 0)
+    );
+  };
+
   return (
     <div>
       <Nav />
@@ -107,42 +134,46 @@ const Batch = () => {
         </svg>
         Create Batch
       </Link>
-      <div className="overflow-x-auto relative shadow-md sm:rounded-lg my-10">
-        <table className="table-auto w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-              <th scope="col" className="py-3 px-6">
-                Process name
-              </th>
-              <th scope="col" className="py-3 px-6">
-                Total quantity running in all batches per process
-              </th>
-              <th scope="col" className="py-3 px-6">
-                Total quantity rejected in all batches per process
-              </th>
-            </tr>
-          </thead>
-          <tbody id="box">
-            {component[0]?.process.map((p, index) => (
-              <tr
-                className="bg-white border-b dark:bg-gray-900 dark:border-gray-700"
-                key={p._id}
-              >
-                <th
-                  scope="row"
-                  className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                >
-                  {p.processName}
-                </th>
-                <td className="py-4 px-6">{calcTotalQuantity(index)}</td>
-                <td className="py-4 px-6">
-                  {calcTotalQuantityRejected(index)}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {user !== "unique" && (
+        <>
+          <div className="overflow-x-auto relative shadow-md sm:rounded-lg my-10">
+            <table className="table-auto w-full text-sm text-left text-gray-500 dark:text-gray-400">
+              <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                  <th scope="col" className="py-3 px-6">
+                    Process name
+                  </th>
+                  <th scope="col" className="py-3 px-6">
+                    Total quantity running in all batches per process
+                  </th>
+                  <th scope="col" className="py-3 px-6">
+                    Total quantity rejected in all batches per process
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="box">
+                {component[0]?.process.map((p, index) => (
+                  <tr
+                    className="bg-white border-b dark:bg-gray-900 dark:border-gray-700"
+                    key={p._id}
+                  >
+                    <th
+                      scope="row"
+                      className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                    >
+                      {p.processName}
+                    </th>
+                    <td className="py-4 px-6">{calcTotalQuantity(index)}</td>
+                    <td className="py-4 px-6">
+                      {calcTotalQuantityRejected(index)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
 
       <div className="overflow-x-auto relative shadow-md sm:rounded-lg">
         <table className="table-auto w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -151,20 +182,53 @@ const Batch = () => {
               <th scope="col" className="py-3 px-6">
                 Batch
               </th>
-              <th scope="col" className="py-3 px-6">
-                Progress
-              </th>
-              <th scope="col" className="py-3 px-6">
-                Remaining no
-              </th>
-              <th scope="col" className="py-3 px-6">
-                Completed no
-              </th>
-              <th scope="col" className="py-3 px-6">
-                Delete batch
-              </th>
+              {user !== "unique" && (
+                <>
+                  <th scope="col" className="py-3 px-6">
+                    Progress
+                  </th>
+                  <th scope="col" className="py-3 px-6">
+                    Remaining no
+                  </th>
+                  <th scope="col" className="py-3 px-6">
+                    Completed no
+                  </th>
+                  <th scope="col" className="py-3 px-6">
+                    Rejected no
+                  </th>
+                  <th scope="col" className="py-3 px-6">
+                    Delete batch
+                  </th>
+                </>
+              )}
             </tr>
           </thead>
+          <Modal open={openModal}>
+            <Box sx={style}>
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Are you sure want to delete?
+              </Typography>
+              <Button
+                className="py-3"
+                onClick={(e) => {
+                  handleClick(deleteBatch);
+                  setOpenModal(false);
+                  setDeleteBatch("");
+                }}
+              >
+                Yes
+              </Button>
+              <Button
+                className="py-5"
+                onClick={(e) => {
+                  setOpenModal(false);
+                  setDeleteBatch("");
+                }}
+              >
+                No
+              </Button>
+            </Box>
+          </Modal>
           <tbody id="box">
             {component[0]?.batches?.map((batch) => (
               <tr
@@ -179,19 +243,33 @@ const Batch = () => {
                     {batch.batchName}
                   </Link>
                 </th>
-                <td className="py-4 px-6">{calcProgress(batch.batchName)}</td>
-                <td className="py-4 px-6">{calcRemaining(batch.batchName)}</td>
-                <td className="py-4 px-6">{calcCompleted(batch.batchName)}</td>
+                {user !== "unique" && (
+                  <>
+                    <td className="py-4 px-6">
+                      {calcProgress(batch.batchName)}
+                    </td>
+                    <td className="py-4 px-6">
+                      {calcRemaining(batch.batchName)}
+                    </td>
+                    <td className="py-4 px-6">
+                      {calcCompleted(batch.batchName)}
+                    </td>
+                    <td className="py-4 px-6">
+                      {calcRejected(batch.batchName)}
+                    </td>
 
-                <button className="py-4 px-16">
-                  <DeleteIcon
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleClick(batch.batchName);
-                    }}
-                    fontSize="medium"
-                  />
-                </button>
+                    <button className="py-4 px-16">
+                      <DeleteIcon
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setDeleteBatch(batch.batchName);
+                          setOpenModal(true);
+                        }}
+                        fontSize="medium"
+                      />
+                    </button>
+                  </>
+                )}
               </tr>
             ))}
           </tbody>

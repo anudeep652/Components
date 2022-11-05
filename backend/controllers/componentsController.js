@@ -98,7 +98,7 @@ const deleteComponent = async (req, res) => {
       });
     }
 
-    await haveComponent.remove();
+    await haveComponent.delete();
     // console.log(haveComponent);
     res.status(200).json({ component });
   } catch (error) {
