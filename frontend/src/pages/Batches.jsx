@@ -134,7 +134,7 @@ const Batch = () => {
         </svg>
         Create Batch
       </Link>
-      {user !== "unique" && (
+      {user === "admin" && (
         <>
           <div className="overflow-x-auto relative shadow-md sm:rounded-lg my-10">
             <table className="table-auto w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -182,7 +182,7 @@ const Batch = () => {
               <th scope="col" className="py-3 px-6">
                 Batch
               </th>
-              {user !== "unique" && (
+              {user === "admin" && (
                 <>
                   <th scope="col" className="py-3 px-6">
                     Progress
@@ -243,7 +243,7 @@ const Batch = () => {
                     {batch.batchName}
                   </Link>
                 </th>
-                {user !== "unique" && (
+                {user === "admin" && (
                   <>
                     <td className="py-4 px-6">
                       {calcProgress(batch.batchName)}

@@ -115,7 +115,7 @@ const Table = () => {
             <th scope="col" className="py-3 px-6 ">
               Component name
             </th>
-            {user !== "unique" && (
+            {user === "admin" && (
               <>
                 <th scope="col" className="py-3 px-6">
                   Total no
@@ -149,7 +149,7 @@ const Table = () => {
               className="bg-white border-b dark:bg-gray-900 dark:border-gray-700"
               key={index}
             >
-              {user !== "unique" ? (
+              {user === "admin" ? (
                 <th
                   scope="row"
                   className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
@@ -168,7 +168,7 @@ const Table = () => {
                   </Link>
                 </th>
               )}
-              {user !== "unique" && (
+              {user === "admin" && (
                 <>
                   <td className="py-4 px-6">{calculateBatches(component)}</td>
                   <td className="py-4 px-6">
